@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
-export class createImages1605693147425 implements MigrationInterface {
+export class createTags1616675946064 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(new Table({
-      name: 'images',
+      name: 'tags',
       columns: [
         {
           name: 'id',
@@ -14,7 +14,7 @@ export class createImages1605693147425 implements MigrationInterface {
           generationStrategy: 'increment',
         },
         {
-          name: 'path',
+          name: 'tag',
           type: 'varchar',
         },
         {
@@ -24,7 +24,7 @@ export class createImages1605693147425 implements MigrationInterface {
       ],
       foreignKeys: [
         {
-          name: 'ImageProduct',
+          name: 'TagProduct',
           columnNames: ['product_id'],
           referencedTableName: 'products',
           referencedColumnNames: ['id'],
@@ -36,6 +36,6 @@ export class createImages1605693147425 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('images');
+    await queryRunner.dropTable('tags');
   }
 }

@@ -5,13 +5,14 @@ import * as Yup from 'yup';
 import productView from '../views/products_view';
 
 import Product from '../models/Product';
+import tags_view from '../views/tags_view';
 
 export default {
   async index(request: Request, response: Response) {
     const productsRepository = getRepository(Product);
 
     const products = await productsRepository.find({
-      relations: ['images'],
+      relations: ['images', 'tags'],
     });
 
     return response.json(productView.renderMany(products));
@@ -23,7 +24,7 @@ export default {
     const productsRepository = getRepository(Product);
 
     const product = await productsRepository.findOneOrFail(id, {
-      relations: ['images'],
+      relations: ['images', 'tags'],
     });
 
     return response.json(productView.render(product));
@@ -41,11 +42,19 @@ export default {
 
     const requestImages = request.files as Express.Multer.File[];
 
+    const requestTags = request.body.tags as Array<string>
+
     const images = requestImages.map(image => {
       return {
         path: image.filename
       }
     });
+
+    const tags = requestTags.map(tag => {
+      return {
+        tag: tag
+      }
+    })
 
     const data = {
       name,
@@ -53,6 +62,7 @@ export default {
       title,
       description,
       images,
+      tags,
     };
 
     const schema = Yup.object().shape({
@@ -62,7 +72,10 @@ export default {
       description: Yup.string().required(),
       images: Yup.array(Yup.object().shape({
         path: Yup.string().required(),
-      })),
+      })).max(5),
+      tags: Yup.array(Yup.object().shape({
+        tag: Yup.string(),
+      })).max(5),
     });
 
     await schema.validate(data, { abortEarly: false });
@@ -72,5 +85,9 @@ export default {
     await productsRepository.save(product);
 
     return response.status(201).json(product);
+  },
+
+  async delete(request: Request, response: Response) {
+
   }
 };

@@ -2,15 +2,15 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 
 import Product from './Product';
 
-@Entity('images')
-export default class Image {
+@Entity('tags')
+export default class Tag {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column()
-  path: string;
+  tag: string;
 
-  @ManyToOne(() => Product, product => product.images)
+  @ManyToOne(() => Product, product => product.tags)
   @JoinColumn({ name: 'product_id' })
   product: Product;
 }

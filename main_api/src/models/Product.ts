@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, JoinColumn } from 'typeorm';
 import Image from './Image';
+import Tag from './Tag'
 
 @Entity('products')
 export default class Product {
@@ -23,4 +24,10 @@ export default class Product {
     })
     @JoinColumn({ name: 'product_id' })
     images: Image[];
+
+    @OneToMany(() => Tag, tag => tag.product, {
+        cascade: ['insert', 'update']
+    })
+    @JoinColumn({ name: 'product_id' })
+    tags: Tag[];
 }

@@ -1,5 +1,6 @@
 import Product from '../models/Product';
 import imagesView from './images_view';
+import tagsView from './tags_view';
 
 export default {
   render(product: Product) {
@@ -9,7 +10,8 @@ export default {
       price: product.price,
       title: product.title,
       description: product.description,
-      images: imagesView.renderMany(product.images)
+      images: imagesView.renderMany(product.images),
+      tags: tagsView.renderMany(product.tags)
     }
   },
 
