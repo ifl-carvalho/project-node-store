@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 
 import productView from '../views/products_view';
 import ProductsRepository from '../repositories/ProductsRepository';
+import TagsRepository from '../repositories/TagsRepository';
 
 export default {
   async index(request: Request, response: Response) {
@@ -28,14 +29,19 @@ export default {
     return response.json(productView.render(product));
   },
 
+  /* TODO:
+   * O select na tabela Tags está pegando apenas 1 objeto,
+   * precisa ser modificado para buscar mais de uma.
+   */
   async create(request: Request, response: Response) {
-    
+
     const {
       name,
       price,
       amount,
       title,
       description,
+      tag,
     } = request.body;
 
     const productsRepository = getCustomRepository(ProductsRepository);
@@ -48,6 +54,10 @@ export default {
       }
     });
 
+    const tagsRepository = getCustomRepository(TagsRepository);
+
+    const tagModel = await tagsRepository.findOneOrFail({ tag });
+
     const productData = {
       name,
       price,
@@ -55,6 +65,7 @@ export default {
       title,
       description,
       images,
+      tags: [tagModel], // deve ser uma lista pois o orm espera uma lista de objeto
     };
 
     const schema = Yup.object().shape({
@@ -66,6 +77,7 @@ export default {
       images: Yup.array(Yup.object().shape({
         path: Yup.string().required(),
       })).max(5),
+      tag: Yup.string().required(),
     });
 
     await schema.validate(productData, { abortEarly: false });
