@@ -1,8 +1,8 @@
-import { Entity, Column, PrimaryColumn, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, ManyToMany, JoinColumn, JoinTable } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 import Image from './Image';
-import ProductTag from './ProductTag';
+import Tag from './Tag';
 
 @Entity('products')
 export default class Product {
@@ -31,11 +31,9 @@ export default class Product {
     @JoinColumn({ name: 'product_id' })
     images: Image[];
 
-    @OneToMany(() => ProductTag, productTag => productTag.product, {
-        cascade: ['insert', 'update']
-    })
-    @JoinColumn({ name: 'product_id' })
-    tags!: ProductTag[];
+    @ManyToMany(() => Tag)
+    @JoinTable()
+    tags: Tag[];
 
     constructor() {
         if(!this.id) {
