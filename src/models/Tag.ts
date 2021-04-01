@@ -12,10 +12,6 @@ export default class Tag {
   @Column()
   tag: string;
 
-  @OneToMany(() => ProductTag, productTag => productTag.tag)
-  @JoinColumn({ name: 'tag_id' })
-  products: ProductTag[];
-
   constructor() {
     if(!this.id) {
         this.id = uuid();
