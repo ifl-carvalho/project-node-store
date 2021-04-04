@@ -8,11 +8,12 @@ export default {
       id: product.id,
       name: product.name,
       price: product.price,
+      discout: product.discount,
       amount: product.amount,
       title: product.title,
       description: product.description,
       images: imagesView.renderMany(product.images),
-      tags: tagsView.renderMany(product.tags)
+      tags: tagsView.renderMany(product.categories)
     }
   },
 

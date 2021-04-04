@@ -1,14 +1,14 @@
-import Tag from '../models/Tag';
+import Category from '../models/Category';
 
 export default {
-  render(tag: Tag) {
+  render(category: Category) {
     return {
-      id: tag.id,
-      tag: tag.tag
+      id: category.id,
+      category: category.category
     }
   },
 
-  renderMany(tags: Tag[]) {
-    return tags.map(tag => this.render(tag))
+  renderMany(categories: Category[]) {
+    return categories.map(category => this.render(category))
   }
 };

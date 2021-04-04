@@ -17,3 +17,8 @@ app.use('/images', express.static(path.join(__dirname, '..', 'images')));
 app.use(errorHandler);
 
 app.listen(3333);
+
+process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    // application specific logging, throwing an error, or other logic here
+  });

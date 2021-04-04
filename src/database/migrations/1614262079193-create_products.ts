@@ -22,6 +22,10 @@ export class createProducts1614262079193 implements MigrationInterface {
           type: 'decimal',
         },
         {
+          name: 'discount',
+          type: 'decimal',
+        },
+        {
           name: 'amount',
           type: 'decimal',
         },
@@ -33,7 +37,7 @@ export class createProducts1614262079193 implements MigrationInterface {
           name: 'description',
           type: 'text',
         },
-      ]
+      ],
     }))
   }
 

@@ -1,46 +1,42 @@
-import { Entity, Column, PrimaryColumn, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinColumn, JoinTable } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 import Image from './Image';
-import ProductTag from './ProductTag';
+import Category from './Category';
 
 @Entity('products')
 export default class Product {
 
-    @PrimaryColumn()
-    readonly id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    price: number;
+  @Column()
+  price: number;
 
-    @Column()
-    amount: number;
+  @Column()
+  discount: number;
 
-    @Column()
-    title: string;
+  @Column()
+  amount: number;
 
-    @Column()
-    description: string;
+  @Column()
+  title: string;
 
-    @OneToMany(() => Image, image => image.product, {
-        cascade: ['insert', 'update']
-    })
-    @JoinColumn({ name: 'product_id' })
-    images: Image[];
+  @Column()
+  description: string;
 
-    @OneToMany(() => ProductTag, productTag => productTag.product, {
-        cascade: ['insert', 'update']
-    })
-    @JoinColumn({ name: 'product_id' })
-    tags!: ProductTag[];
+  @OneToMany(() => Image, image => image.product, {
+    cascade: ['insert', 'update']
+  })
+  @JoinColumn({ name: 'product_id' })
+  images: Image[];
 
-    constructor() {
-        if(!this.id) {
-            this.id = uuid();
-        }
-    }
-
+  @ManyToMany(() => Category, category => category.products, {
+    cascade: true
+  })
+  @JoinTable()
+  categories!: Category[];
 }
