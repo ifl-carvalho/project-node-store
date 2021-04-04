@@ -8,7 +8,7 @@ export default {
       id: product.id,
       name: product.name,
       price: product.price,
-      discout: product.discount,
+      discount: product.discount,
       amount: product.amount,
       title: product.title,
       description: product.description,
