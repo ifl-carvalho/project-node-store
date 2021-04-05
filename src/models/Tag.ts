@@ -3,16 +3,16 @@ import { v4 as uuid } from 'uuid';
 
 import Product from './Product'
 
-@Entity('categories')
-export default class Category {
+@Entity('tags')
+export default class Tag {
 
   @PrimaryColumn()
   readonly id: string;
 
   @Column()
-  category: string;
+  tag: string;
 
-  @ManyToMany(() => Product, product => product.categories)
+  @ManyToMany(() => Product, product => product.tags)
   products: Product[];
 
   constructor() {

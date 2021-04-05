@@ -4,14 +4,14 @@ import * as Yup from 'yup';
 
 import productView from '../views/products_view';
 import ProductsRepository from '../repositories/ProductsRepository';
-import CategoriesRepository from '../repositories/CategoriesRepository';
+import TagsRepository from '../repositories/TagsRepository';
 
 export default {
   async index(request: Request, response: Response) {
     const productsRepository = getCustomRepository(ProductsRepository);
 
     const products = await productsRepository.find({
-      relations: ['images', 'categories'],
+      relations: ['images', 'tags'],
     });
 
     return response.json(productView.renderMany(products));
@@ -23,7 +23,7 @@ export default {
     const productsRepository = getCustomRepository(ProductsRepository);
 
     const product = await productsRepository.findOneOrFail(id, {
-      relations: ['images', 'categories'],
+      relations: ['images', 'tags'],
     });
 
     return response.json(productView.render(product));
@@ -49,26 +49,26 @@ export default {
     });
 
 
-    const categoriesRepository = getCustomRepository(CategoriesRepository)
+    const tagsRepository = getCustomRepository(TagsRepository)
 
-    const requestCategories = request.body.categories as Array<string>
+    const requestTags = request.body.categories as Array<string>
 
-    const categories = requestCategories.map(category => {
-      return { category: category }
+    const tags = requestTags.map(tag => {
+      return { tag: tag }
     });
 
-    const categoriesExist = async category => {
-      const categoryExist = await categoriesRepository.find({ where: { category: category } })
-      return categoryExist[0]
+    const tagsExist = async tag => {
+      const tagExist = await tagsRepository.find({ where: { tag: tag } })
+      return tagExist[0]
     }
 
-    const categoriesCheck = await Promise.all(requestCategories.map(categoriesExist))
+    const tagsCheck = await Promise.all(requestTags.map(tagsExist))
 
-    const categoriesModel = () => {
-      if(categoriesCheck[0] == null) {
-        return categories
+    const tagsModel = () => {
+      if(tagsCheck[0] == null) {
+        return tags
       } else {
-        return categoriesCheck
+        return tagsCheck
       }
     }
 
@@ -80,7 +80,7 @@ export default {
       title,
       description,
       images,
-      categories: categoriesModel()
+      tags: tagsModel()
     };
 
     const schema = Yup.object().shape({
@@ -93,9 +93,9 @@ export default {
       images: Yup.array(Yup.object().shape({
         path: Yup.string().required(),
       })).max(5),
-      categories: Yup.array(Yup.object().shape({
+      tags: Yup.array(Yup.object().shape({
         id: Yup.string(),
-        category: Yup.string().required(),
+        tag: Yup.string().required(),
       })).max(5),
     });
 

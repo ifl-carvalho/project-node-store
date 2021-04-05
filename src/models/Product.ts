@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinColu
 import { v4 as uuid } from 'uuid';
 
 import Image from './Image';
-import Category from './Category';
+import Tag from './Tag';
 
 @Entity('products')
 export default class Product {
@@ -34,9 +34,9 @@ export default class Product {
   @JoinColumn({ name: 'product_id' })
   images: Image[];
 
-  @ManyToMany(() => Category, category => category.products, {
+  @ManyToMany(() => Tag, tag => tag.products, {
     cascade: true
   })
   @JoinTable()
-  categories!: Category[];
+  tags!: Tag[];
 }
