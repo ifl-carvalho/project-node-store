@@ -51,26 +51,12 @@ export default {
 
     const tagsRepository = getCustomRepository(TagsRepository)
 
-    const requestTags = request.body.categories as Array<string>
+    const requestTags = request.body.tags as Array<string>
 
-    const tags = requestTags.map(tag => {
-      return { tag: tag }
-    });
-
-    const tagsExist = async tag => {
-      const tagExist = await tagsRepository.find({ where: { tag: tag } })
-      return tagExist[0]
-    }
-
-    const tagsCheck = await Promise.all(requestTags.map(tagsExist))
-
-    const tagsModel = () => {
-      if(tagsCheck[0] == null) {
-        return tags
-      } else {
-        return tagsCheck
-      }
-    }
+    const tags = await Promise.all(requestTags.map(async tag => {
+      const tagExist = await tagsRepository.findOne({ where: { tag: tag } })
+      return tagExist ? tagExist : { tag: tag };
+    }))
 
     let productData = {
       name,
@@ -80,7 +66,7 @@ export default {
       title,
       description,
       images,
-      tags: tagsModel()
+      tags: tags
     };
 
     const schema = Yup.object().shape({
