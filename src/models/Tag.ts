@@ -1,23 +1,21 @@
-import { Entity, PrimaryColumn, Column, ManyToMany } from 'typeorm';
-import { v4 as uuid } from 'uuid';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
 
 import Product from './Product'
+import Category from './Category'
 
 @Entity('tags')
 export default class Tag {
 
-  @PrimaryColumn()
-  readonly id: string;
+  @PrimaryGeneratedColumn()
+  id: number
 
   @Column()
-  tag: string;
+  name: string;
 
   @ManyToMany(() => Product, product => product.tags)
   products: Product[];
 
-  constructor() {
-    if(!this.id) {
-        this.id = uuid();
-    }
-  }
+  @ManyToMany(() => Category, category => category.tags)
+  categories: Category[];
+  
 }

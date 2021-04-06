@@ -2,45 +2,38 @@ import { Request, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
 import * as Yup from 'yup';
 
-import productsView from '../views/products_view';
-import ProductsRepository from '../repositories/ProductsRepository';
+import categoriesView from '../views/categories_view';
+import CategoriesRepository from '../repositories/CategoriesRepository';
 import TagsRepository from '../repositories/TagsRepository';
 
 export default {
   async index(request: Request, response: Response) {
-    const productsRepository = getCustomRepository(ProductsRepository);
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
 
-    const products = await productsRepository.find({
+    const categories = await categoriesRepository.find({
       relations: ['images', 'tags'],
     });
 
-    return response.json(productsView.renderMany(products));
+    return response.json(categoriesView.renderMany(categories));
   },
 
   async show(request: Request, response: Response) {
     const { id } = request.params;
 
-    const productsRepository = getCustomRepository(ProductsRepository);
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
 
-    const product = await productsRepository.findOneOrFail(id, {
+    const categories = await categoriesRepository.findOneOrFail(id, {
       relations: ['images', 'tags'],
     });
 
-    return response.json(productsView.render(product));
+    return response.json(categoriesView.render(categories));
   },
 
   async create(request: Request, response: Response) {
-    
-    const {
-      name,
-      price,
-      discount,
-      amount,
-      title,
-      description
-    } = request.body;
 
-    const productsRepository = getCustomRepository(ProductsRepository);
+    const { name } = request.body;
+
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
 
     const requestImages = request.files as Express.Multer.File[];
 
@@ -57,40 +50,30 @@ export default {
       return tagExist ? tagExist : { name: tag };
     }))
 
-    let productData = {
+    let categoryData = {
       name,
-      price,
-      discount,
-      amount,
-      title,
-      description,
       images,
       tags
     };
 
     const schema = Yup.object().shape({
       name: Yup.string().required(),
-      price: Yup.number().required(),
-      discount: Yup.number().required(),
-      amount: Yup.number().required(),
-      title: Yup.string().required(),
-      description: Yup.string().required(),
       images: Yup.array(Yup.object().shape({
         path: Yup.string().required(),
-      })).max(5),
+      })).max(2),
       tags: Yup.array(Yup.object().shape({
         id: Yup.string(),
         name: Yup.string().required(),
-      })).max(5),
+      })),
     });
 
-    await schema.validate(productData, { abortEarly: false });
+    await schema.validate(categoryData, { abortEarly: false });
 
-    const product = productsRepository.create(productData);
+    const category = categoriesRepository.create(categoryData);
 
-    await productsRepository.save(product);
+    await categoriesRepository.save(category);
 
-    return response.status(201).json(product);
+    return response.status(201).json(category);
   },
 
   async delete(request: Request, response: Response) {

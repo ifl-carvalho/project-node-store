@@ -1,4 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import Category from './Category';
 
 import Product from './Product';
 
@@ -13,6 +14,10 @@ export default class Image {
 
   @ManyToOne(() => Product, product => product.images)
   @JoinColumn({ name: 'product_id' })
-  product: Product;
+  product!: Product;
 
+  @ManyToOne(() => Category, category => category.images)
+  @JoinColumn({ name: 'category_id' })
+  category!: Category;
+  
 }

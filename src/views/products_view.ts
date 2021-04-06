@@ -1,6 +1,6 @@
 import Product from '../models/Product';
 import imagesView from './images_view';
-import categoriesView from './tags_view';
+import tagsView from './tags_view';
 
 export default {
   render(product: Product) {
@@ -13,11 +13,11 @@ export default {
       title: product.title,
       description: product.description,
       images: imagesView.renderMany(product.images),
-      tags: categoriesView.renderMany(product.tags)
+      tags: tagsView.renderMany(product.tags)
     }
   },
 
-  renderMany(product: Product[]) {
-    return product.map(product => this.render(product))
+  renderMany(products: Product[]) {
+    return products.map(product => this.render(product))
   }
 };

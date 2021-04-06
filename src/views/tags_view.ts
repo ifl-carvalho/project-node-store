@@ -4,7 +4,7 @@ export default {
   render(tag: Tag) {
     return {
       id: tag.id,
-      category: tag.tag
+      name: tag.name
     }
   },
 

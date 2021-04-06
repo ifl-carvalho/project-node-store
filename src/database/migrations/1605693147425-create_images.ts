@@ -21,12 +21,24 @@ export class createImages1605693147425 implements MigrationInterface {
           name: 'product_id',
           type: 'integer',
         },
+        {
+          name: 'category_id',
+          type: 'integer',
+        }
       ],
       foreignKeys: [
         {
           name: 'ImageProduct',
           columnNames: ['product_id'],
           referencedTableName: 'products',
+          referencedColumnNames: ['id'],
+          onUpdate: 'CASCADE',
+          onDelete: 'CASCADE',
+        },
+        {
+          name: 'ImageCategory',
+          columnNames: ['category_id'],
+          referencedTableName: 'categories',
           referencedColumnNames: ['id'],
           onUpdate: 'CASCADE',
           onDelete: 'CASCADE',

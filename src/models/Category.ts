@@ -1,10 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, JoinTable, OneToMany, ManyToMany } from 'typeorm';
 
-import Image from './Image';
+import Image from './Image'
 import Tag from './Tag';
 
-@Entity('products')
-export default class Product {
+@Entity('categories')
+export default class Category {
 
   @PrimaryGeneratedColumn()
   id: number;
@@ -12,31 +12,16 @@ export default class Product {
   @Column()
   name: string;
 
-  @Column()
-  price: number;
-
-  @Column()
-  discount: number;
-
-  @Column()
-  amount: number;
-
-  @Column()
-  title: string;
-
-  @Column()
-  description: string;
-
-  @OneToMany(() => Image, image => image.product, {
+  @OneToMany(() => Image, image => image.category, {
     cascade: true
   })
   @JoinColumn({ name: 'product_id' })
   images: Image[];
 
-  @ManyToMany(() => Tag, tag => tag.products, {
+  @ManyToMany(() => Tag, tag => tag.categories, {
     cascade: true
   })
   @JoinTable()
   tags!: Tag[];
-
+  
 }
