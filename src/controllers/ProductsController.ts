@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getCustomRepository } from 'typeorm';
+import { getConnection, getCustomRepository, IsNull, Like, Not } from 'typeorm';
 import * as Yup from 'yup';
 
 import productsView from '../views/products_view';
@@ -8,29 +8,57 @@ import TagsRepository from '../repositories/TagsRepository';
 
 export default {
   async index(request: Request, response: Response) {
-    const productsRepository = getCustomRepository(ProductsRepository);
+    const reqTag = request.query.tag as (String | Array<String>);
+    const order = request.query.order == "DESC" ? 'DESC' : 'ASC';
+    const skip = request.query.skip || 0;
+    const take = request.query.take || 500;
 
-    const products = await productsRepository.find({
-      relations: ['images', 'tags'],
+    const query = {
+      reqTag,
+      skip: +skip * +take,
+      take: +take
+    }
+
+    const schema = Yup.object().shape({
+      reqTag: Yup.lazy(val => (Array.isArray(val) ? Yup.array().of(Yup.string()) : Yup.string())),
+      order: Yup.string(),
+      skip: Yup.number().required(),
+      take: Yup.number().required(),
     });
 
-    return response.json(productsView.renderMany(products));
+    await schema.validate(query, { abortEarly: false });
+
+    const productsRepository = await getCustomRepository(ProductsRepository)
+    .createQueryBuilder('product')
+    .leftJoinAndSelect('product.images', 'image')
+    .leftJoinAndSelect('product.tags', 'tag')
+
+    if ( typeof query.reqTag == "string" || ( query.reqTag instanceof String)) {
+      productsRepository.andWhere('LOWER(tag.name) IN (LOWER(:tag))', { tag: query.reqTag })
+    } else if ( Array.isArray(query.reqTag) ) {
+      query.reqTag.map(tag => tag.toLowerCase())
+      productsRepository.andWhere('LOWER(tag.name) IN (:...tag)', { tag: query.reqTag }) 
+    }
+    
+    const [products, totalOfProducts] = await productsRepository.orderBy('product.id', order).take(query.take).skip(query.skip).getManyAndCount();
+        
+    return response.json({ totalOfPages: Math.ceil(totalOfProducts / query.take), products: productsView.renderMany(products)});
   },
 
   async show(request: Request, response: Response) {
     const { id } = request.params;
 
-    const productsRepository = getCustomRepository(ProductsRepository);
-
-    const product = await productsRepository.findOneOrFail(id, {
-      relations: ['images', 'tags'],
-    });
+    const product = await getCustomRepository(ProductsRepository)
+    .createQueryBuilder('product')
+    .leftJoinAndSelect('product.images', 'image')
+    .leftJoinAndSelect('product.tags', 'tag')
+    .where('product.id = :id', { id: id })
+    .getOneOrFail();
 
     return response.json(productsView.render(product));
   },
 
   async create(request: Request, response: Response) {
-    
     const {
       name,
       price,
@@ -59,9 +87,9 @@ export default {
 
     let productData = {
       name,
-      price,
-      discount,
-      amount,
+      price: parseFloat(price),
+      discount: parseFloat(discount),
+      amount: parseInt(amount, 10),
       title,
       description,
       images,
@@ -97,3 +125,7 @@ export default {
 
   }
 };
+
+function andWhere(arg0: string, arg1: { tagName: string | import("qs").ParsedQs | string[] | import("qs").ParsedQs[]; }) {
+  throw new Error('Function not implemented.');
+}

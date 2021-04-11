@@ -7,9 +7,9 @@ export default {
     return {
       id: product.id,
       name: product.name,
-      price: product.price,
-      discount: product.discount,
-      amount: product.amount,
+      price: product.price.toString(),
+      discount: product.discount.toString(),
+      amount: product.amount.toString(),
       title: product.title,
       description: product.description,
       images: imagesView.renderMany(product.images),

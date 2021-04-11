@@ -11,11 +11,12 @@ const routes = Router();
 const upload = multer(uploadConfig)
 
 routes.get('/products', ProductsController.index);
-routes.get('/product/:id', ProductsController.show);
-routes.get('/categories', CategoriesController.index);
-routes.get('/category/:id', CategoriesController.show);
+routes.get('/products/:id', ProductsController.show);
 
-routes.post('/admin/product', upload.array('images'), ProductsController.create);
-routes.post('/admin/category', upload.array('images'), CategoriesController.create)
+routes.get('/categories', CategoriesController.index);
+routes.get('/categories/:id', CategoriesController.show);
+
+routes.post('/admin/products', upload.array('images'), ProductsController.create);
+routes.post('/admin/categories', upload.array('images'), CategoriesController.create);
 
 export default routes;
