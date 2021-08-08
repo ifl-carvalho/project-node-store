@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { getConnection, getCustomRepository, IsNull, Like, Not } from 'typeorm';
+import { getCustomRepository } from 'typeorm';
 import * as Yup from 'yup';
 
 import productsView from '../views/products_view';
@@ -28,7 +28,7 @@ export default {
 
     await schema.validate(query, { abortEarly: false });
 
-    const productsRepository = await getCustomRepository(ProductsRepository)
+    const productsRepository = getCustomRepository(ProductsRepository)
     .createQueryBuilder('product')
     .leftJoinAndSelect('product.images', 'image')
     .leftJoinAndSelect('product.tags', 'tag')
@@ -46,16 +46,16 @@ export default {
   },
 
   async show(request: Request, response: Response) {
-    const { id } = request.params;
+    const { id } = request.query;
 
     const product = await getCustomRepository(ProductsRepository)
     .createQueryBuilder('product')
     .leftJoinAndSelect('product.images', 'image')
     .leftJoinAndSelect('product.tags', 'tag')
-    .where('product.id = :id', { id: id })
-    .getOneOrFail();
+    .where('product.id IN (:...id)', { id: id })
+    .getMany();
 
-    return response.json(productsView.render(product));
+    return response.json(productsView.renderMany(product));
   },
 
   async create(request: Request, response: Response) {

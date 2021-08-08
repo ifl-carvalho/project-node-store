@@ -11,7 +11,7 @@ const routes = Router();
 const upload = multer(uploadConfig)
 
 routes.get('/products', ProductsController.index);
-routes.get('/products/:id', ProductsController.show);
+routes.get('/products/id/', ProductsController.show);
 
 routes.get('/categories', CategoriesController.index);
 routes.get('/categories/:id', CategoriesController.show);
