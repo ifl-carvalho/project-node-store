@@ -42,7 +42,7 @@ export default {
     
     const [products, totalOfProducts] = await productsRepository.orderBy('product.id', order).take(query.take).skip(query.skip).getManyAndCount();
         
-    return response.json({ totalOfPages: Math.ceil(totalOfProducts / query.take), products: productsView.renderMany(products)});
+    return response.json({ pageCount: Math.ceil(totalOfProducts / query.take), products: productsView.renderMany(products)});
   },
 
   async show(request: Request, response: Response) {
